@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import PrimeVue from 'primevue/config'
+import ConfirmationService from 'primevue/confirmationservice'
 import Aura from '@primeuix/themes/aura'
 import 'primeicons/primeicons.css'
 
@@ -15,5 +16,6 @@ app.use(PrimeVue, {
     },
   },
 })
+app.use(ConfirmationService)
 
 app.mount('#app')

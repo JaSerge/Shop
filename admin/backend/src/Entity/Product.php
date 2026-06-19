@@ -19,8 +19,9 @@ class Product
     #[ORM\Column(length: 255)]
     private string $name = '';
 
-    #[ORM\Column(length: 100)]
-    private string $type = '';
+    #[ORM\ManyToOne(targetEntity: ProductType::class)]
+    #[ORM\JoinColumn(name: 'type_id', referencedColumnName: 'id', nullable: false)]
+    private ProductType $type;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
@@ -36,6 +37,9 @@ class Product
 
     #[ORM\Column]
     private \DateTimeImmutable $updatedAt;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $deletedAt = null;
 
     public function __construct()
     {
@@ -67,12 +71,12 @@ class Product
         return $this;
     }
 
-    public function getType(): string
+    public function getType(): ProductType
     {
         return $this->type;
     }
 
-    public function setType(string $type): static
+    public function setType(ProductType $type): static
     {
         $this->type = $type;
 
@@ -123,5 +127,17 @@ class Product
     public function getUpdatedAt(): \DateTimeImmutable
     {
         return $this->updatedAt;
+    }
+
+    public function getDeletedAt(): ?\DateTimeImmutable
+    {
+        return $this->deletedAt;
+    }
+
+    public function softDelete(): static
+    {
+        $this->deletedAt = new \DateTimeImmutable();
+
+        return $this;
     }
 }
