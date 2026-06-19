@@ -1,0 +1,20 @@
+services:
+  web-backend-cli:
+    user: 1000:1000
+    build:
+      context: ${PATH_BACKEND}
+      target: platform-cli
+    volumes:
+      - ${PATH_BACKEND}:/var/www/html
+  web-frontend-cli:
+    user: 1000:1000
+    build:
+      context: ${PATH_FRONTEND}
+      target: platform
+    network_mode: host
+    volumes:
+      - ${PATH_FRONTEND}:/var/www
+networks:
+  default:
+    name: ${COMPOSE_PROJECT_NAME}-network-default
+    driver: bridge

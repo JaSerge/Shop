@@ -1,0 +1,83 @@
+services:
+    gateway:
+        container_name: ${COMPOSE_PROJECT_NAME}-gateway
+        build:
+            context: ./gateway
+        ports:
+            - ${GATEWAY_PORT}:80
+        depends_on:
+          #  web-frontend-gateway:
+          #      condition: service_healthy
+            web-backend-gateway:
+                condition: service_healthy
+    web-backend-gateway:
+        container_name: ${COMPOSE_PROJECT_NAME}-web-backend-gateway
+        build:
+            context: ${PATH_BACKEND}
+            target: gateway
+        ports:
+            -  10:80
+        healthcheck:
+            test: [ "CMD", "curl", "-f", "http://localhost/api/healthcheck" ]
+            interval: 10s
+            retries: 10
+            start_period: 5s
+        depends_on:
+            web-backend-fpm:
+                condition: service_healthy
+    web-backend-fpm:
+        user: 1000:1000
+        container_name: ${COMPOSE_PROJECT_NAME}-web-backend-fpm
+        volumes:
+            - ${PATH_BACKEND}:/var/www/html
+        build:
+            context: ${PATH_BACKEND}
+            target: platform-fpm-dev
+        healthcheck:
+            test: [ "CMD", "php-fpm-healthcheck" ]
+            interval: 10s
+            timeout: 5s
+            retries: 6
+        depends_on:
+            db:
+                condition: service_healthy
+    web-frontend-gateway:
+        container_name: ${COMPOSE_PROJECT_NAME}-web-frontend-gateway
+        volumes:
+            - ${PATH_FRONTEND}:/var/www
+        build:
+            context: ${PATH_FRONTEND}
+            target: gateway-dev
+      #  healthcheck:
+       #     test: [ "CMD", "curl", "-f", "http://localhost:80" ]
+        #    interval: 5s
+        #    retries: 10
+        #    start_period: 30s
+    db:
+        container_name: ${COMPOSE_PROJECT_NAME}-db
+        build:
+            context: ./database
+        environment:
+            MYSQL_DATABASE: ${DB_NAME}
+            MYSQL_USER: ${DB_USER}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}            
+        ports:
+            - ${DB_PORT}:3306
+        volumes:
+            - ./database/init.sql:/docker-entrypoint-initdb.d/1-init_schema.sql
+            - db_data:/var/lib/mysql
+        healthcheck:
+            test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 10s
+
+volumes:
+    db_data:
+
+networks:
+    default:
+        name: ${COMPOSE_PROJECT_NAME}-network-default
+        driver: bridge
