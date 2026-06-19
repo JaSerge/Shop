@@ -60,7 +60,7 @@
               :options="typeOptions"
               option-label="label"
               option-value="value"
-              placeholder="Все типы"
+              placeholder="Типы"
               show-clear
               class="products-table__filter"
               @change="onFilterChange"
@@ -162,7 +162,7 @@ const selectedTypeId = ref(null)
 const selectedStock = ref('all')
 
 const stockOptions = [
-  { label: 'Все', value: 'all' },
+  { label: 'Наличие', value: 'all' },
   { label: 'В наличии', value: 'in_stock' },
   { label: 'Нет в наличии', value: 'out_of_stock' },
 ]
@@ -175,6 +175,13 @@ const queryParams = ref({
   typeId: null,
   stock: 'all',
 })
+
+const maxLength = 100
+const truncatedMessage = (name) => {
+  if (!name) return 'этот товар'
+  const str = String(name)
+  return str.length > maxLength ? str.slice(0, maxLength) + '…' : str
+}
 
 function formatPrice(value) {
   return new Intl.NumberFormat('ru-RU', {
@@ -241,8 +248,9 @@ async function onFormSubmit(payload) {
 
 function confirmDelete(product) {
   confirm.require({
+    styleClass: 'custom-confirm-dialog',
     header: 'Удаление товара',
-    message: `Удалить товар «${product.name}»?`,
+    message: `Удалить товар «${truncatedMessage(product.name)}»?`,    
     icon: 'pi pi-exclamation-triangle',
     rejectLabel: 'Отмена',
     acceptLabel: 'Удалить',
@@ -367,4 +375,26 @@ onMounted(async () => {
   display: flex;
   gap: 0.25rem;
 }
+
+:deep(.p-datatable) {
+  font-size: 0.875rem; /* 14px вместо 16px */
+  --p-datatable-cell-padding: 0.25rem 0.5rem;
+}
+
+:deep(.p-datatable tbody td) {
+  padding: 0.25rem 0.5rem;
+  line-height: 1.2;
+}
+
+:deep(.p-datatable thead th) {
+  padding: 0.4rem 0.5rem;
+  font-size: 0.95rem;
+}
+
+:deep(.custom-confirm-dialog) {
+  width: 90% !important;
+  max-width: 480px !important;
+  overflow: hidden;
+}
+
 </style>

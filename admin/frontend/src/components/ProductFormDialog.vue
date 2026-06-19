@@ -2,8 +2,7 @@
   <Dialog
     :visible="visible"
     :header="isEdit ? 'Редактирование товара' : 'Добавление товара'"
-    modal
-    :style="{ width: '32rem' }"
+    modal    
     @update:visible="onVisibleChange"
   >
     <div class="product-form">
@@ -14,6 +13,7 @@
           v-model="form.name"
           class="product-form__input"
           :invalid="Boolean(errors.name)"
+          maxlength=255
         />
         <small v-if="errors.name" class="product-form__error">{{ errors.name }}</small>
       </div>
@@ -41,6 +41,7 @@
           rows="3"
           auto-resize
           class="product-form__input"
+          maxlength=1000
         />
       </div>
 
@@ -211,9 +212,12 @@ function onVisibleChange(value) {
 }
 
 .product-form__row {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.product-form__row .product-form__field {
+  flex: 1;
 }
 
 .product-form__field {

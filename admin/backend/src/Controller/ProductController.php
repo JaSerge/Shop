@@ -75,7 +75,7 @@ class ProductController extends AbstractController
         $entityManager->persist($product);
         $entityManager->flush();
 
-        return $this->json($this->serializeProduct($product), Response::HTTP_CREATED);
+        return $this->json($this->serializeProduct($product), Response::HTTP_CREATED);  // 201
     }
 
     #[Route('/api/products/{id}', name: 'api_products_update', methods: ['PUT'], requirements: ['id' => '\d+'])]
@@ -128,7 +128,7 @@ class ProductController extends AbstractController
         $product->softDelete();
         $entityManager->flush();
 
-        return $this->json(['success' => true]);
+        return $this->json(null, Response::HTTP_NO_CONTENT);  // 204
     }
 
     /**

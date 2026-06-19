@@ -1,8 +1,8 @@
 <template>
   <div class="app">
     <header class="app__header">
-      <h1>Каталог товаров</h1>
-      <p class="app__subtitle">Список товаров из базы данных</p>
+      <h1>TopShop@</h1>
+      <p class="app__subtitle">Работаем без выходных</p>
     </header>
 
     <main class="app__main">
@@ -35,7 +35,7 @@ body {
 }
 
 .app__header {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto 1.5rem;
 }
 
@@ -51,7 +51,7 @@ body {
 }
 
 .app__main {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 </style>
