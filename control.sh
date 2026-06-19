@@ -2,7 +2,9 @@
 
 set -e
 
-source .env
+if [ -f ".env" ]; then
+    source .env
+
 
 FileEnvBack="${FILE_ENV_BACKEND}"
 
@@ -15,6 +17,8 @@ if [ ! -f "$FileEnvBack" ]; then
     echo "Файл не назадан: $FileEnvBack"
     echo "💡 Укажите FILE_ENV_BACKEND в .env"
     exit 1
+fi
+
 fi
 
 function docker_init() {
