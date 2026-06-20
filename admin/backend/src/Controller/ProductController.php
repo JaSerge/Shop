@@ -24,7 +24,7 @@ class ProductController extends AbstractController
         $order = $request->query->getString('order', 'asc');
         $stock = $request->query->getString('stock', 'all');
 
-        if (!in_array($stock, ['all', 'in_stock', 'out_of_stock'], true)) {
+        if (!in_array($stock, ['in_stock', 'out_of_stock'], true)) {
             $stock = 'all';
         }
 

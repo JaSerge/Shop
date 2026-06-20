@@ -47,36 +47,12 @@ function docker_startup() {
     output "Project startup finished, now you can visit web by going into http://localhost:${GATEWAY_PORT}/"
 }
 
-function docker_init_volumes() {
-    select opt in "Локальная БД (докер)" "Тестовая БД" "Удаленная БД"; do
-      case $REPLY in
-          1)
-            _database_config_clear
-            
-            
-            output "Backend - migrations"
-            docker_migrate
-            output "Backend successfully migrated and configured"
-
-            break
-            ;;
-          2)
-            _database_config_clear
-
-            _database_add_test_config
-
-            break
-            ;;
-          3)            
-            echo "Укажите настройки для удаленного сервера в ${FileEnvBack}"              
-
-            break
-            ;;            
-         *)
-            echo "Неверный выбор, попробуйте снова"
-            ;;
-      esac
-    done
+function docker_init_volumes() {      
+    _database_config_clear
+                        
+    output "Backend - migrations"
+    docker_migrate
+    output "Backend successfully migrated and configured"            
 }
 
 function docker_up() {

@@ -19,7 +19,7 @@ final class Version20250618120000 extends AbstractMigration
         $this->addSql(<<<'SQL'
             CREATE TABLE product_types (
                 id INT AUTO_INCREMENT NOT NULL,
-                name VARCHAR(100) NOT NULL,
+                name VARCHAR(100) NOT NULL COMMENT 'Название типа товара',
                 UNIQUE INDEX UNIQ_product_types_name (name),
                 PRIMARY KEY(id)
             ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
@@ -29,14 +29,17 @@ final class Version20250618120000 extends AbstractMigration
             CREATE TABLE products (
                 id INT AUTO_INCREMENT NOT NULL,
                 type_id INT NOT NULL,
-                name VARCHAR(255) NOT NULL,
-                description LONGTEXT DEFAULT NULL,
-                quantity INT NOT NULL,
-                price NUMERIC(10, 2) NOT NULL,
-                created_at DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-                updated_at DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-                deleted_at DATETIME DEFAULT NULL COMMENT '(DC2Type:datetime_immutable)',
+                name VARCHAR(255) NOT NULL COMMENT 'Название товара',
+                description VARCHAR(1000) DEFAULT NULL COMMENT 'Описание товара',
+                quantity INT NOT NULL COMMENT 'Количество',
+                price NUMERIC(10, 2) NOT NULL COMMENT 'Цена',
+                created_at DATETIME NOT NULL COMMENT 'Дата создания',
+                updated_at DATETIME NOT NULL COMMENT 'Дата обновления',
+                deleted_at DATETIME DEFAULT NULL COMMENT 'Дата удаления',
                 INDEX IDX_products_type_id (type_id),
+                INDEX IDX_products_type_qty_price (type_id, quantity, price),
+                -- ограничение на уникальность по name и type_id (по усмотрению можно только на name или вообще не делать- в задании не было)
+                UNIQUE INDEX UNIQ_products_name_type_desc (name, type_id),
                 PRIMARY KEY(id),
                 CONSTRAINT FK_products_type_id FOREIGN KEY (type_id) REFERENCES product_types (id)
             ) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB

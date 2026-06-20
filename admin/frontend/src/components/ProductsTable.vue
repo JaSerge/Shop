@@ -70,6 +70,8 @@
               :options="stockOptions"
               option-label="label"
               option-value="value"
+              placeholder="Наличие товара"
+              show-clear
               class="products-table__filter"
               @change="onFilterChange"
             />
@@ -78,7 +80,7 @@
       </template>
 
       <Column field="name" header="Название" sortable />
-      <Column field="type" header="Тип" sortable />
+      <Column field="type" header="Тип" />
       <Column field="description" header="Описание">
         <template #body="{ data }">
           <span class="products-table__description">
@@ -86,7 +88,7 @@
           </span>
         </template>
       </Column>
-      <Column field="quantity" header="Количество" sortable>
+      <Column field="quantity" header="Количество">
         <template #body="{ data }">
           <Tag
             :value="data.quantity > 0 ? 'В наличии' : 'Нет в наличии'"
@@ -161,8 +163,7 @@ const editingProduct = ref(null)
 const selectedTypeId = ref(null)
 const selectedStock = ref('all')
 
-const stockOptions = [
-  { label: 'Наличие', value: 'all' },
+const stockOptions = [  
   { label: 'В наличии', value: 'in_stock' },
   { label: 'Нет в наличии', value: 'out_of_stock' },
 ]
@@ -173,7 +174,7 @@ const queryParams = ref({
   sort: 'id',
   order: 'asc',
   typeId: null,
-  stock: 'all',
+  stock: 'all', // наличие на складе
 })
 
 const maxLength = 100
