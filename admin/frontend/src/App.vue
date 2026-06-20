@@ -1,5 +1,6 @@
 <template>
   <div class="app">
+    <Toast />
     <header class="app__header">
       <h1>TopShop@</h1>
       <p class="app__subtitle">Работаем без выходных</p>
@@ -13,6 +14,7 @@
 
 <script setup>
 import ProductsTable from './components/ProductsTable.vue'
+import Toast from 'primevue/toast'
 </script>
 
 <style>

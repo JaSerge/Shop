@@ -1,9 +1,5 @@
 <template>
   <div class="products-table">
-    <Message v-if="error" severity="error" :closable="false" class="products-table__message">
-      {{ error }}
-    </Message>
-
     <ConfirmDialog />
 
     <ProductFormDialog
@@ -139,6 +135,7 @@ import Tag from 'primevue/tag'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { useConfirm } from 'primevue/useconfirm'
 import ProductFormDialog from './ProductFormDialog.vue'
+import { useToast } from 'primevue/usetoast'
 import {
   createProduct,
   deleteProduct,
@@ -162,6 +159,7 @@ const formVisible = ref(false)
 const editingProduct = ref(null)
 const selectedTypeId = ref(null)
 const selectedStock = ref('all')
+const toast = useToast()
 
 const stockOptions = [  
   { label: 'В наличии', value: 'in_stock' },
@@ -192,12 +190,30 @@ function formatPrice(value) {
   }).format(Number(value))
 }
 
+function showError(message) {
+/*  error.value = message
+  setTimeout(() => {
+    error.value = ''
+  }, 3000) */
+  toast.add({
+    severity: 'error',
+    summary: 'Ошибка',
+    detail: message,
+    life: 6000, 
+    closable: true,
+  })
+}
+
 async function loadProductTypes() {
-  const types = await fetchProductTypes()
-  typeOptions.value = types.map((type) => ({
-    label: type.name,
-    value: type.id,
-  }))
+  try {
+    const types = await fetchProductTypes()
+    typeOptions.value = types.map((type) => ({
+      label: type.name,
+      value: type.id,
+    }))
+  } catch (e) {
+    showError(e.message || 'Не удалось загрузить типы товаров')
+  }    
 }
 
 async function loadProducts() {
@@ -208,10 +224,10 @@ async function loadProducts() {
     const result = await fetchProducts(queryParams.value)
     products.value = result.data
     totalRecords.value = result.meta.total
-  } catch (e) {
-    error.value = e.message || 'Не удалось загрузить товары'
+  } catch (e) {    
     products.value = []
     totalRecords.value = 0
+    showError(e.message || 'Не удалось загрузить товары')    
   } finally {
     loading.value = false
   }
@@ -228,8 +244,7 @@ function openEditForm(product) {
 }
 
 async function onFormSubmit(payload) {
-  saving.value = true
-  error.value = ''
+  saving.value = true  
 
   try {
     if (payload.id) {
@@ -240,8 +255,9 @@ async function onFormSubmit(payload) {
 
     formVisible.value = false
     await loadProducts()
+
   } catch (e) {
-    error.value = e.message || 'Не удалось сохранить товар'
+    showError(e.message || 'Не удалось сохранить товар')
   } finally {
     saving.value = false
   }
@@ -264,14 +280,12 @@ function confirmDelete(product) {
       label: 'Удалить',
       severity: 'danger',
     },
-    accept: async () => {
-      error.value = ''
-
+    accept: async () => {      
       try {
         await deleteProduct(product.id)
         await loadProducts()
       } catch (e) {
-        error.value = e.message || 'Не удалось удалить товар'
+        showError(e.message || 'Не удалось удалить товар')
       }
     },
   })
@@ -315,7 +329,7 @@ onMounted(async () => {
     await loadProductTypes()
     await loadProducts()
   } catch (e) {
-    error.value = e.message || 'Не удалось загрузить данные'
+    showError(e.message || 'Не удалось загрузить данные')
   }
 })
 </script>

@@ -167,11 +167,11 @@ class ProductController extends AbstractController
         }
 
         if (!isset($payload['quantity']) || !is_numeric($payload['quantity']) || (int) $payload['quantity'] < 0) {
-            return 'Количество должно быть неотрицательным числом';
+            return 'Количество должно быть положительным числом';
         }
 
         if (!isset($payload['price']) || !is_numeric($payload['price']) || (float) $payload['price'] < 0) {
-            return 'Цена должна быть неотрицательным числом';
+            return 'Цена должна быть положительным числом';
         }
 
         return null;
