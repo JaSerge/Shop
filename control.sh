@@ -4,26 +4,14 @@ set -e
 
 if [ -f ".env" ]; then
     source .env
-
-
-FileEnvBack="${FILE_ENV_BACKEND}"
-
-if [ ! -f "$FileEnvBack" ] && [ -f "${PATH_BACKEND}/.env.docker" ]; then
-    cp "${PATH_BACKEND}/.env.docker" "$FileEnvBack"
-fi
-
-# Проверяем существование файла
-if [ ! -f "$FileEnvBack" ]; then
-    echo "Файл не назадан: $FileEnvBack"
-    echo "💡 Укажите FILE_ENV_BACKEND в .env"
-    exit 1
-fi
-
 fi
 
 function docker_init() {
     output "Copy .env"
     cp -n .env.example .env
+    
+    source .env
+    
     cp -n $PATH_BACKEND/.env.docker $PATH_BACKEND/.env
     if [ -f "$PATH_FRONTEND/.env.docker" ]; then
         cp -n $PATH_FRONTEND/.env.docker $PATH_FRONTEND/.env
@@ -47,9 +35,7 @@ function docker_startup() {
     output "Project startup finished, now you can visit web by going into http://localhost:${GATEWAY_PORT}/"
 }
 
-function docker_init_volumes() {      
-    _database_config_clear
-                        
+function docker_init_volumes() {                                  
     output "Backend - migrations"
     docker_migrate
     output "Backend successfully migrated and configured"            
@@ -141,30 +127,6 @@ function _database_download_dump() {
     # Получаем дамп с удаленной машины
     mysqldump -u eir -p'123' -h 192.168.17.29 -P 3306 eir_tj eir > eir_dump.sql
 }
-
-# Функция для удаления настроек подключения к БД из .env
-function _database_config_clear() {
-    echo "Создаем бэкап: ${FileEnvBack}.bak"
-    cp "$FileEnvBack" "${FileEnvBack}.bak"
-    
-    echo "🗑️  Удаляем настройки подключения к БД из $FileEnvBack..."
-    
-    sed -i '
-    /^# *=*$/d;
-    /^# Настройки для подключения к БД/d;    
-    /^DB_\(CONNECTION\|HOST\|PORT\|DATABASE\|USERNAME\|PASSWORD\|SCHEMA\)=/d;
-    /^DB_\(CONNECTION\|HOST\|PORT\|DATABASE\|USERNAME\|PASSWORD\|SCHEMA\)_MAIN=/d
-    ' "$FileEnvBack"
-
-    # Удаляем пустые строки в конце файла
-    sed -i '${/^$/d;}' "$FileEnvBack"
-    
-    echo "✅ Настройки подключения к БД удалены (бэкап: ${FileEnvBack}.bak)"
-}
-
-
-
-# Функция для добавления в backend/.env настроек для подключения к тестовой БД
 
 
 
