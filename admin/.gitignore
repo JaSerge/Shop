@@ -29,7 +29,7 @@ node_modules
 /dist
 
 # local env files
-.env*
+#.env*
 .env
 # Log files
 npm-debug.log*
