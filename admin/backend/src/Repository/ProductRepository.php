@@ -45,7 +45,7 @@ class ProductRepository extends ServiceEntityRepository
         }
 
         $order = strtolower($order) === 'desc' ? 'DESC' : 'ASC';
-        $sortField = 'type' === $sort ? 't.name' : 'p.'.$sort;
+        $sortField = 'p.'.$sort;
 
         return $this->createFilteredQueryBuilder($typeId, $stock)
             ->orderBy($sortField, $order)
